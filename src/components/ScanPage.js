@@ -2,23 +2,32 @@ import React, { useState } from 'react';
 import Header from './Header';  
 import { FaBluetoothB, FaDownload } from 'react-icons/fa';
 
-function BluetoothScanPage() {
+function ScanPage() {
   const [devices, setDevices] = useState([]);
   const [scanning, setScanning] = useState(false);
 
   const startScanning = async () => {
     setScanning(true);
+    setDevices([]); 
+
     try {
+      const timeout = setTimeout(() => {
+        setScanning(false);
+        alert("Skeniranje završeno.");
+      }, 10000);
+
       const device = await navigator.bluetooth.requestDevice({
         acceptAllDevices: true,
         optionalServices: ['battery_service'],
       });
 
       setDevices((prevDevices) => [...prevDevices, device]);
+
+      clearTimeout(timeout); 
     } catch (error) {
       console.error('Greška prilikom skeniranja', error);
     } finally {
-      setScanning(false);
+      setScanning(false); 
     }
   };
 
@@ -68,4 +77,4 @@ function BluetoothScanPage() {
   );
 }
 
-export default BluetoothScanPage;
+export default ScanPage;
