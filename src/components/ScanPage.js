@@ -1,14 +1,18 @@
 import React, { useState } from 'react';
-import Header from './Header';  
+import { useLocation } from 'react-router-dom';
+import Header from './Header';
 import { FaBluetoothB, FaDownload } from 'react-icons/fa';
 
 function ScanPage() {
   const [devices, setDevices] = useState([]);
   const [scanning, setScanning] = useState(false);
+  const location = useLocation();
+  const queryParams = new URLSearchParams(location.search);
+  const subjectName = queryParams.get('subjectName') || 'Nepoznat predmet';
 
   const knownStudent = {
     name: 'Nikolina Carević',
-    bluetoothId: 'ZJ1wKZUE8aNTZh01yZSFpQ==' 
+    bluetoothId: '5WJUVG/lk720wXwUVDKVpQ=='
   };
 
   const startScanning = async () => {
@@ -23,14 +27,14 @@ function ScanPage() {
 
       const device = await navigator.bluetooth.requestDevice({
         acceptAllDevices: true,
-        optionalServices: ['battery_service'], 
+        optionalServices: ['battery_service'],
       });
 
       const deviceName = device.name || 'Nepoznati uređaj';
       const deviceLabel = device.id === knownStudent.bluetoothId ? knownStudent.name : deviceName;
 
       setDevices((prevDevices) => [
-        ...prevDevices, 
+        ...prevDevices,
         { id: device.id, name: deviceLabel }
       ]);
 
@@ -42,34 +46,30 @@ function ScanPage() {
     }
   };
 
-  const downloadReport = () => {
-    const headers = ['Naziv uređaja', 'Bluetooth ID'];
-    const rows = devices.map(device => [device.name, device.id]);
-    const csvContent = [
-      headers.join(','),
-      ...rows.map(row => row.join(','))
-    ].join('\n');
-
-    const encodedUri = 'data:text/csv;charset=utf-8,' + encodeURIComponent(csvContent);
-    const link = document.createElement('a');
-    link.setAttribute('href', encodedUri);
-    link.setAttribute('download', 'izvjestaj_uredaja.csv');
-    link.click();
-  };
-
   return (
     <div className="min-h-screen bg-gray-100">
       <Header />
       <div className="container mx-auto mt-10 flex flex-col items-center">
-        <h2 className="text-2xl font-bold mb-6 text-center">Skeniraj uređaje</h2>
+
+        <h2 className="text-2xl font-bold text-left text-gray-800 w-full max-w-md self-start ml-3">
+          {subjectName}
+        </h2>
+        <h4 className="text-sm text-gray-400 w-full max-w-md self-start ml-2.5 mb-4">
+          Prisutnost na predavanju
+        </h4>
+
 
         <button
           onClick={startScanning}
           disabled={scanning}
-          className="bg-blue-500 text-white py-2 px-6 rounded-lg mb-4 hover:bg-blue-600 transition"
+          className="bg-blue-500 text-white py-2 px-6 rounded-lg mt-20 mb-10 hover:bg-blue-600 transition"
         >
           {scanning ? 'Skeniram...' : 'Pokreni skeniranje'}
         </button>
+
+
+
+
 
         <div className="w-full max-w-md">
           {devices.length > 0 ? (
@@ -97,7 +97,7 @@ function ScanPage() {
           )}
         </div>
 
-        <div className="mt-6 text-gray-600 flex items-center cursor-pointer" onClick={downloadReport}>
+        <div className="mt-6 text-gray-600 flex items-center cursor-pointer">
           <FaDownload className="mr-2" />
           <span>Preuzmi izvještaj</span>
         </div>

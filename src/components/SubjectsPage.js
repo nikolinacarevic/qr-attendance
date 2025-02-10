@@ -18,8 +18,8 @@ function SubjectsPage() {
     ]);
   }, []);
 
-  const handleSubjectClick = (id) => {
-    navigate(`/scan`);
+  const handleSubjectClick = (id, name) => {
+    navigate(`/scan?subjectId=${id}&subjectName=${encodeURIComponent(name)}`);
   };
 
   const handleDayClick = (day) => {
@@ -51,7 +51,7 @@ function SubjectsPage() {
             filteredSubjects.map((subject) => (
               <div
                 key={subject.id}
-                onClick={() => handleSubjectClick(subject.id)}
+                onClick={() => handleSubjectClick(subject.id, subject.name)}
                 className="bg-white shadow-md p-6 rounded-lg w-96 cursor-pointer transition hover:shadow-lg hover:bg-blue-100"
               >
                 <h3 className="text-lg font-semibold text-left">{subject.name}</h3>

@@ -1,12 +1,12 @@
 import React from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { LogOut, User } from "lucide-react";
 
 const Header = () => {
   const navigate = useNavigate();
+  const location = useLocation(); // Dohvaćanje trenutne rute
 
   const handleLogout = () => {
-
     navigate("/login");
   };
 
@@ -16,8 +16,18 @@ const Header = () => {
         <div className="text-xl font-bold">Evidencija studenata</div>
 
         <nav className="flex space-x-6">
-          <Link to="/" className="hover:underline">Predmeti</Link>
-          <Link to="/reports" className="hover:underline">Izvještaji</Link>
+          <Link
+            to="/"
+            className={`hover:underline ${location.pathname === "/" ? "font-bold border-b-2 border-white" : ""}`}
+          >
+            Predmeti
+          </Link>
+          <Link
+            to="/reports"
+            className={`hover:underline ${location.pathname === "/reports" ? "font-bold border-b-2 border-white" : ""}`}
+          >
+            Izvještaji
+          </Link>
         </nav>
 
         <div className="flex items-center space-x-4">
