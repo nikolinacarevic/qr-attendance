@@ -15,8 +15,10 @@ function AttendPage() {
   const [attendanceList, setAttendanceList] = useState([]);
 
   const students = [
-    { username: 'nikolinacarevic', password: '12345', firstName: 'Nikolina', lastName: 'Carević' },
-    { username: 'markojovic', password: '67890', firstName: 'Marko', lastName: 'Jović' },
+    { username: 'nikolinacarevic', password: 'ime123', firstName: 'Nikolina', lastName: 'Carević' },
+    { username: 'marijacubic', password: 'ime123', firstName: 'Marija', lastName: 'Ćubić' },
+    { username: 'katarinabotic', password: 'ime123', firstName: 'Katarina', lastName: 'Botić' },
+    { username: 'paulabonic', password: 'ime123', firstName: 'Paula', lastName: 'Bonić' },
   ];
 
   useEffect(() => {
@@ -62,7 +64,7 @@ function AttendPage() {
       {/* Pop-up za prijavu */}
       {showLoginPopup && (
         <div className="fixed inset-0 flex justify-center items-center bg-black bg-opacity-50 z-50">
-          <div className="bg-white p-8 rounded-lg shadow-xl w-96">
+          <div className="bg-white p-8 rounded-lg shadow-xl w-full max-w-md">
             <h2 className="text-2xl font-bold text-center text-black mb-6">Prijava studenta</h2>
             <form onSubmit={handleLogin}>
               <div className="mb-4">
