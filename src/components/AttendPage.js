@@ -64,7 +64,7 @@ function AttendPage() {
       {/* Pop-up za prijavu */}
       {showLoginPopup && (
         <div className="fixed inset-0 flex justify-center items-center bg-black bg-opacity-50 z-50">
-          <div className="bg-white p-8 rounded-lg shadow-xl w-full max-w-md">
+          <div className="bg-white p-8 rounded-lg shadow-xl w-full max-w-md sm:max-w-sm">
             <h2 className="text-2xl font-bold text-center text-black mb-6">Prijava studenta</h2>
             <form onSubmit={handleLogin}>
               <div className="mb-4">
