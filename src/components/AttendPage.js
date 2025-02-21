@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
-import Header from './Header';
 
 function AttendPage() {
   const location = useLocation();
@@ -48,7 +47,7 @@ function AttendPage() {
         setAttendanceList(updatedAttendanceList);
         localStorage.setItem('attendanceList', JSON.stringify(updatedAttendanceList));
       }
-      
+
       // Uvijek dopuštamo prijavu, bez obzira na listu prisutnih
       setShowLoginPopup(false);
       setIsLoggedIn(true);
@@ -59,12 +58,10 @@ function AttendPage() {
 
   return (
     <div className="min-h-screen bg-gray-100">
-      <Header />
-
       {/* Pop-up za prijavu */}
       {showLoginPopup && (
         <div className="fixed inset-0 flex justify-center items-center bg-black bg-opacity-50 z-50">
-          <div className="bg-white p-6 sm:p-8 rounded-lg shadow-xl w-full max-w-xs sm:max-w-sm">
+          <div className="bg-white p-8 rounded-lg shadow-xl w-full max-w-md">
             <h2 className="text-2xl font-bold text-center text-black mb-6">Prijava studenta</h2>
             <form onSubmit={handleLogin}>
               <div className="mb-4">
@@ -103,7 +100,7 @@ function AttendPage() {
 
       {/* Poruka o uspešnoj prijavi */}
       {!showLoginPopup && isLoggedIn && (
-        <div className="container mx-auto mt-8 sm:mt-16 p-6">
+        <div className="container mx-auto mt-16 p-6">
           <h2 className="text-3xl font-bold text-center text-gray-800 mb-6">
             Prisutnost zabilježena
           </h2>
