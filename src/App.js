@@ -4,6 +4,7 @@ import LoginPage from './components/LoginPage';
 import SubjectsPage from './components/SubjectsPage';
 import ScanPage from './components/ScanPage';  
 import Reports from './components/Reports';
+import AttendPage from './components/AttendPage';
 
 function App() {
   return (
@@ -13,6 +14,7 @@ function App() {
         <Route path="/login" element={<LoginPage />} />
         <Route path="/scan" element={<ScanPage />} />
         <Route path="/reports" element={<Reports />} />
+        <Route path="/attend" element={<AttendPage />} />
       </Routes>
     </div>
   );
