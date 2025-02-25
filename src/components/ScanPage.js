@@ -9,7 +9,7 @@ function ScanPage() {
   const location = useLocation();
   const queryParams = new URLSearchParams(location.search);
   const subjectName = queryParams.get('subjectName') || 'Nepoznat predmet';
-  const attendanceUrl = `${window.location.origin}/attend?sessionId=${sessionId}`;
+  const attendanceUrl = `${window.location.origin}/attend?sessionId=${sessionId}&subjectName=${subjectName}`;
 
   return (
     <div className="min-h-screen bg-gray-100">

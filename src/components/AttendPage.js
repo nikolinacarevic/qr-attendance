@@ -1,10 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import { useLocation } from 'react-router-dom';
+import {useLocation } from 'react-router-dom';
 
 function AttendPage() {
   const location = useLocation();
   const queryParams = new URLSearchParams(location.search);
   const sessionId = queryParams.get('sessionId');
+  const subjectName = queryParams.get('subjectName');
 
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [showLoginPopup, setShowLoginPopup] = useState(true);
@@ -21,9 +22,24 @@ function AttendPage() {
   ];
 
   useEffect(() => {
-    const storedAttendanceList = JSON.parse(localStorage.getItem('attendanceList')) || [];
-    setAttendanceList(storedAttendanceList);
-  }, []);
+    const sessionId = new URLSearchParams(location.search).get('sessionId');
+    console.log("Session id:" + sessionId )
+    if (sessionId && isLoggedIn) {
+      // Dohvati prisutnost s backend-a
+      fetch(`http://localhost:5000/api/attendance/${sessionId}`)
+        .then(response => response.json())
+        .then(data => {
+          
+          if (data.length > 0) {
+            setAttendanceList(data); // Ažuriraj listu prisutnih
+          }
+        })
+        .catch(error => {
+          console.error('Greška pri dohvaćanju podataka o prisutnosti:', error);
+        });
+    }
+  }, [sessionId, isLoggedIn, location.search]);
+  
 
   useEffect(() => {
     if (sessionId && isLoggedIn) {
@@ -31,30 +47,44 @@ function AttendPage() {
     }
   }, [sessionId, isLoggedIn]);
 
-  const handleLogin = (e) => {
-    e.preventDefault();
+  const handleLogin = async (e) => {
+  e.preventDefault();
 
-    const student = students.find(
-      (student) => student.username === username && student.password === password
-    );
+  const student = students.find(
+    (student) => student.username === username && student.password === password
+  );
 
-    if (student) {
-      const studentName = `${student.firstName} ${student.lastName}`;
+  if (student) {
+    try {
+      const response = await fetch(`http://localhost:5000/attend`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          sessionId,
+          username: student.username,
+          firstName: student.firstName,
+          lastName: student.lastName,
+          subjectName,
+        }),
+      });
 
-      // Ako student nije već na listi, dodajemo ga
-      if (!attendanceList.includes(studentName)) {
-        const updatedAttendanceList = [...attendanceList, studentName];
-        setAttendanceList(updatedAttendanceList);
-        localStorage.setItem('attendanceList', JSON.stringify(updatedAttendanceList));
+      const data = await response.json();
+
+      if (data.success) {
+        alert(data.message);
+        setShowLoginPopup(false);
+        setIsLoggedIn(true);
+      } else {
+        setErrorMessage("Greška pri evidentiranju prisutnosti.");
       }
-
-      // Uvijek dopuštamo prijavu, bez obzira na listu prisutnih
-      setShowLoginPopup(false);
-      setIsLoggedIn(true);
-    } else {
-      setErrorMessage('Pogrešno korisničko ime ili lozinka!');
+    } catch (error) {
+      setErrorMessage("Greška pri povezivanju s backendom.");
     }
-  };
+  } else {
+    setErrorMessage("Pogrešno korisničko ime ili lozinka!");
+  }
+};
+
 
   return (
     <div className="min-h-screen bg-gray-100">
@@ -119,7 +149,7 @@ function AttendPage() {
               <tbody>
                 {attendanceList.map((student, index) => (
                   <tr key={index} className="hover:bg-gray-100 border-b">
-                    <td className="py-3 px-6 text-gray-700">{student}</td>
+                    <td className="py-3 px-6 text-gray-700">{student.firstName + " " + student.lastName}</td>
                   </tr>
                 ))}
               </tbody>
