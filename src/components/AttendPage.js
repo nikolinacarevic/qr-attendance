@@ -13,13 +13,21 @@ function AttendPage() {
   const [password, setPassword] = useState('');
   const [errorMessage, setErrorMessage] = useState('');
   const [attendanceList, setAttendanceList] = useState([]);
+  const [students,setStudents]=useState([]);
 
-  const students = [
-    { username: 'nikolinacarevic', password: 'ime123', firstName: 'Nikolina', lastName: 'Carević' },
-    { username: 'marijacubic', password: 'ime123', firstName: 'Marija', lastName: 'Ćubić' },
-    { username: 'katarinabotic', password: 'ime123', firstName: 'Katarina', lastName: 'Botić' },
-    { username: 'paulabonic', password: 'ime123', firstName: 'Paula', lastName: 'Bonić' },
-  ];
+  useEffect(()=>{
+    fetch(`http://localhost:5000/api/students`)
+    .then(response=>response.json())
+    .then(data=>{
+      if (data.length > 0) {
+        setStudents(data); // Dohvati listu studenata
+        console.log("marija ne voli nevolju")
+      }
+    })
+    .catch(error => {
+      console.error('Greška pri dohvaćanju studenata', error);
+    });
+  },[sessionId])
 
   useEffect(() => {
     const sessionId = new URLSearchParams(location.search).get('sessionId');
@@ -37,6 +45,7 @@ function AttendPage() {
         .catch(error => {
           console.error('Greška pri dohvaćanju podataka o prisutnosti:', error);
         });
+
     }
   }, [sessionId, isLoggedIn, location.search]);
   
@@ -48,15 +57,31 @@ function AttendPage() {
   }, [sessionId, isLoggedIn]);
 
   const handleLogin = async (e) => {
-  e.preventDefault();
-
-  const student = students.find(
-    (student) => student.username === username && student.password === password
-  );
-
-  if (student) {
+    e.preventDefault();
+  
+    const student = students.find(
+      (student) => student.username === username && student.password === password
+    );
+  
+    if (!student) {
+      setErrorMessage("Pogrešno korisničko ime ili lozinka!");
+      return;
+    }
+  
     try {
-      const response = await fetch(`http://localhost:5000/attend`, {
+      const response = await fetch(`http://localhost:5000/api/attendance/${sessionId}`);
+      const latestAttendance = await response.json();
+  
+      setAttendanceList(latestAttendance);
+  
+      const duplicate = latestAttendance.find(attend => attend.username === username);
+  
+      if (duplicate) {
+        setErrorMessage("Već ste evidentirani!");
+        return;
+      }
+  
+      const postResponse = await fetch(`http://localhost:5000/attend`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -67,11 +92,11 @@ function AttendPage() {
           subjectName,
         }),
       });
-
-      const data = await response.json();
-
-      if (data.success) {
-        alert(data.message);
+  
+      const postData = await postResponse.json();
+  
+      if (postData.success) {
+        alert(postData.message);
         setShowLoginPopup(false);
         setIsLoggedIn(true);
       } else {
@@ -80,10 +105,8 @@ function AttendPage() {
     } catch (error) {
       setErrorMessage("Greška pri povezivanju s backendom.");
     }
-  } else {
-    setErrorMessage("Pogrešno korisničko ime ili lozinka!");
-  }
-};
+  };
+  
 
 
   return (

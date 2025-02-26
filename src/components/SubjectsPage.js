@@ -8,15 +8,20 @@ function SubjectsPage() {
   const [selectedDay, setSelectedDay] = useState('Ponedjeljak');
   const navigate = useNavigate();
 
-  useEffect(() => {
-    setSubjects([
-      { id: 1, name: 'Ugradbeni računalni sustavi 250', location: 'Dvorana A100', time: '10:15 - 12:00', day: 'Ponedjeljak' },
-      { id: 2, name: 'Arhitektura računala 920', location: 'Dvorana A103', time: '12:15 - 14:00', day: 'Utorak' },
-      { id: 3, name: 'Operacijski sustavi 120', location: 'Dvorana A100', time: '08:15 - 10:00', day: 'Srijeda' },
-      { id: 4, name: 'Arhitektura digitalnih računala 550', location: 'Dvorana A104', time: '10:15 - 12:00', day: 'Ponedjeljak' },
-      { id: 5, name: 'Napredne arhitekture računala 220', location: 'Dvorana A100', time: '14:15 - 16:00', day: 'Petak' },
-    ]);
-  }, []);
+   useEffect(()=>{
+      fetch(`http://localhost:5000/api/subjects`)
+      .then(response=>response.json())
+      .then(data=>{
+        if (data.length > 0) {
+          setSubjects(data); // Dohvati listu predmeta
+          console.log("marija voli nevolju")
+        }
+      })
+      .catch(error => {
+        console.error('Greška pri dohvaćanju predmeta', error);
+      });
+    },[])
+  
 
   const handleSubjectClick = (id, name) => {
     navigate(`/scan?subjectId=${id}&subjectName=${encodeURIComponent(name)}`);
